@@ -366,6 +366,8 @@ int calendar::setNext(){
 
 		}
 }
+
+
 boolean calendar::isRepeatAlarm(){ 
 	if (period == dtDailyRepeatAlarm) 	return true; 
 	if (period == dtWeeklyRepeatAlarm) 	return true; 
