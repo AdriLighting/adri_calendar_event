@@ -1,5 +1,5 @@
 #include "calendar_add.h"
-
+// #define DEBUG
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 PROGMEM calendar_addEvent calendar_add [] = { 
@@ -11,6 +11,8 @@ PROGMEM calendar_addEvent calendar_add [] = {
 	{"timer_start_end", 		"", 5, &calendarAdd},
 	{"timer_startDay", 			"", 6, &calendarAdd},
 	{"timer_startDay_endDay", 	"", 7, &calendarAdd},
+	{"weekly_end", 				"", 8, &calendarAdd},
+	{"daily_end", 				"", 9, &calendarAdd},
 };
 uint8_t calendar_addCount = ARRAY_SIZE(calendar_add);
 int calendar_addPos;
@@ -57,16 +59,29 @@ int calendarAdd(int pos, char * _name, time_t _startValue, time_t _endValue, tim
 		case 7: 
 			cPos = calendar_createTimer_v2(iName, _startValue, _endValue, _value, _onTickHandler, _endTickHandler);	
 			if (cPos != -1) calendar_array[cPos]->pos = 7;
-		break;															
+		break;
+		
+		case 8: 
+			cPos = calendar_createWeekly(iName, _value, _endValue, _onTickHandler, _dayOfWeek, _endTickHandler);
+			if (cPos != -1) calendar_array[cPos]->pos = 1;
+		break;	
+
+		case 9: 
+			cPos = calendar_createDaily(iName, _value, _endValue, _onTickHandler, _dayOfWeek, _endTickHandler);
+			if (cPos != -1) calendar_array[cPos]->pos = 3;
+		break;	
+
 	}
 	return cPos;
 }
+
 String cal_info_parm(String name, String value , String sep, int len, String last, String tdb1, String tdb2) {
    String s=name;
    while (s.length()<len) s+=" ";
    return tdb1+s+sep+tdb2+value+last;
 }
 void calendarPrint_0(int fPos, int ePos){
+#ifdef DEBUG
 	String fName = ce_char_to_string(calendar_add[fPos].name);
 	String fDesc = ce_char_to_string(calendar_add[fPos].desc);
 
@@ -155,7 +170,7 @@ void calendarPrint_0(int fPos, int ePos){
 
 		Serial.flush();
 
-		yield();
+		// yield();
 		
 		Serial.printf("\n[calendarPrint_0] #%s : %s\n",pos.c_str(), name.c_str());
 
@@ -191,7 +206,7 @@ void calendarPrint_0(int fPos, int ePos){
 		// 	s += cal_info_parm("repetition de l'event",						s_repeatValue, 		":", 18, "\n", "", "   ");}
 
 	
-
+#endif
 }
 void calendarPrint(){
 	for( int i = 0; i < calendar_number_of_event; i++) { 

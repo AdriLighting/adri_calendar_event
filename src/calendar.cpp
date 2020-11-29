@@ -1,6 +1,6 @@
 #include "calendar.h"
 
-#define DEBUG
+// #define DEBUG
 
 int calendar_number_of_event=0; 
 int calendar_event_selected= 0; 
@@ -57,6 +57,57 @@ int calendar_createWeekly(String _name, time_t _value, OnTick_t _onTickHandler, 
 	}
 }
 
+
+/*  
+    calendar_createWeekly : 
+    (String _name, time_t _value, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek)
+        every day   : slected week day with : _dayOfWeek
+        start time  : start at the _value
+        end at      : at (start time + _endValue)
+        repeat      : none
+*/
+int calendar_createWeekly(String _name, time_t _value, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler){
+	if (calendar_number_of_event < EVENT_MAX) {
+		int pos = calendar_number_of_event;
+
+		new calendar();
+
+		calendar_array[pos]->createTime     = now();
+		calendar_array[pos]->o_endValue 	= _endValue;
+		calendar_array[pos]->isEnabled 		= true;
+		calendar_array[pos]->name 			= _name;
+		calendar_array[pos]->onTickHandler 	= _onTickHandler;
+		calendar_array[pos]->endTickHandler = _endTickHandler;
+		calendar_array[pos]->period			= dtWeeklyEndAlarm;
+		calendar_array[pos]->dayOfWeek		= _dayOfWeek;
+		calendar_array[pos]->startValue 	= -1;
+		calendar_array[pos]->endValue 		= (_dayOfWeek-1) * SECS_PER_DAY + (_value + _endValue);
+		calendar_array[pos]->value 			= (_dayOfWeek-1) * SECS_PER_DAY + _value;
+		calendar_array[pos]->startTime 		= _value;
+		calendar_array[pos]->nextTrigger 	= _value;
+		// if ((_value + previousSunday(now())) <= now()) {
+		// 	calendar_array[pos]->nextTrigger = _value + nextSunday(now());
+		// } else {
+		// 	calendar_array[pos]->nextTrigger = _value + previousSunday(now());
+		// }			
+		return pos;
+	}
+}
+int calendar_editWeekly(calendar * obj, time_t _value, time_t _endValue, boolean enabled){
+		timeDayOfWeek_t _dayOfWeek 	= obj->dayOfWeek;
+		obj->o_endValue 			= _endValue;
+		obj->startValue 			= -1;
+		obj->endValue 				= (_dayOfWeek-1) * SECS_PER_DAY + (_value + _endValue);
+		obj->value 					= (_dayOfWeek-1) * SECS_PER_DAY + _value;
+		obj->startTime 				= _value;
+		obj->nextTrigger 			= _value;
+		if ( (obj->endValue + previousSunday(now())) <= now()) { 
+			Serial.printf("\n[calendar_createWeekly] : up to tomorrow\n");
+			obj->nextTrigger = _value + nextSunday(now());
+			
+		}				
+}
+
 /*  
     calendar_createWeekly : 
     (String _name, time_t _value, time_t _repeat, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek)
@@ -88,6 +139,7 @@ int calendar_createWeekly(String _name, time_t _value, time_t _repeat, time_t _e
 		return pos;
 	}
 }
+
 int calendar_editWeekly(calendar * obj, time_t _value, time_t _repeat, time_t _endValue, boolean enabled){
 		timeDayOfWeek_t _dayOfWeek 	= obj->dayOfWeek;
 		obj->o_endValue 			= _endValue;
@@ -103,6 +155,7 @@ int calendar_editWeekly(calendar * obj, time_t _value, time_t _repeat, time_t _e
 			
 		}				
 }
+
 
 /*  
     calendar_createDaily :
@@ -153,6 +206,51 @@ int calendar_editDaily(calendar * obj, time_t _value, boolean enabled){
         every day   : all day
         start time  : start at the _value
         end at      : at the (_value + _endValue)
+        repeat      : none
+*/ 
+int calendar_createDaily(String _name, time_t _value, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler){
+	if (calendar_number_of_event < EVENT_MAX) {
+		int pos = calendar_number_of_event;
+
+		new calendar();
+
+		calendar_array[pos]->createTime     = now();
+		calendar_array[pos]->o_endValue		= _endValue;
+		calendar_array[pos]->isEnabled 		= true;
+		calendar_array[pos]->isOneShot 		= true;
+		calendar_array[pos]->name 			= _name;
+		calendar_array[pos]->onTickHandler 	= _onTickHandler;
+		calendar_array[pos]->endTickHandler = _endTickHandler;		
+		calendar_array[pos]->period			= dtDailyEndAlarm;
+		calendar_array[pos]->dayOfWeek		= _dayOfWeek;
+		calendar_array[pos]->startValue 	= -1;
+		calendar_array[pos]->startTime 		= _value;
+		if ((_value+_endValue) + previousMidnight(now()) <= now()) {
+			// Serial.printf("\nset nextmidnight\n");
+				calendar_array[pos]->value 	= _value + nextMidnight(now());
+		} else 	calendar_array[pos]->value 	= _value;	
+		calendar_array[pos]->endValue 		= calendar_array[pos]->value + _endValue;
+		calendar_array[pos]->nextTrigger 	= calendar_array[pos]->value;
+		return pos;
+	}
+}
+int calendar_editDaily(calendar * obj, time_t _value, time_t _endValue, boolean enabled){
+		obj->startValue 	= -1;
+		obj->o_endValue 	= _endValue;
+		obj->startTime 		= _value;
+		if ((_value+_endValue) + previousMidnight(now()) <= now()) {
+				obj->value 	= _value + nextMidnight(now());
+		} else 	obj->value 	= _value;	
+		obj->endValue 		= obj->value + _endValue;
+		obj->nextTrigger 	= obj->value;
+}
+
+/*  
+    calendar_createDaily :
+   calendar_createDaily(iName, _value, _repeat, _endValue, _onTickHandler, _dayOfWeek);
+        every day   : all day
+        start time  : start at the _value
+        end at      : at the (_value + _endValue)
         repeat      : every _repeate
 */ 
 int calendar_createDaily(String _name, time_t _value, time_t _repeat, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler){
@@ -173,7 +271,7 @@ int calendar_createDaily(String _name, time_t _value, time_t _repeat, time_t _en
 		calendar_array[pos]->startValue 	= -1;
 		calendar_array[pos]->startTime 		= _value;
 		if ((_value+_endValue) + previousMidnight(now()) <= now()) {
-			Serial.printf("\nset nextmidnight\n");
+			// Serial.printf("\nset nextmidnight\n");
 				calendar_array[pos]->value 	= _value + nextMidnight(now());
 		} else 	calendar_array[pos]->value 	= _value;	
 		calendar_array[pos]->endValue 		= calendar_array[pos]->value + _endValue;
@@ -337,12 +435,14 @@ int calendar_createTimer_v2(String _name, time_t _startValue, time_t _endValue, 
 int calendar_edit(calendar * obj, time_t _value, time_t _repeat, time_t _endValue, boolean enabled){
 	if (obj->period == dtDailyAlarm) 		{calendar_editDaily(obj, _value, enabled);}
 	if (obj->period == dtDailyRepeatAlarm) 	{calendar_editDaily(obj, _value, _repeat, _endValue, enabled);}
+	if (obj->period == dtDailyEndAlarm) 	{calendar_editDaily(obj, _value, _endValue, enabled);}
 	if (obj->period == dtWeeklyRepeatAlarm)	{calendar_editWeekly(obj, _value, _repeat, _endValue, enabled);}
+	if (obj->period == dtWeeklyEndAlarm)	{calendar_editWeekly(obj, _value, _endValue, enabled);}
 
 }
 
 String timer_toString(time_t t) {
-    char tmpStr[20];
+    char tmpStr[100];
     sprintf(tmpStr, "%02d:%02d:%02d", hour(t), minute(t), second(t));
     return String(tmpStr);
 }
@@ -357,11 +457,15 @@ int calendar::setNext(){
 		} else if (period == dtDailyAlarm) {		
 			nextTrigger = value + nextMidnight(time);
 		} else if (period == dtDailyRepeatAlarm) {
-			nextTrigger = value + nextMidnight(time);		
+			nextTrigger = value + nextMidnight(time);	
+		} else if (period == dtDailyEndAlarm) {
+			nextTrigger = value + nextMidnight(time);					
 		} else if (period == dtWeeklyAlarm) {
 			nextTrigger = value + nextSunday(time);	
-		} else if (period == dtWeeklyRepeatAlarm) {
+		} else if (period == dtWeeklyEndAlarm) {
 			nextTrigger = value + nextSunday(time);
+		} else if (period == dtWeeklyRepeatAlarm) {
+			nextTrigger = value + nextSunday(time);			
 		} else {
 
 		}
@@ -427,7 +531,32 @@ int calendar::updateNextTrigger(int pos){
 				#endif
 				nextTrigger = value + previousMidnight(time);
 				return 0;
-			}			
+			}	
+		} else if (period == dtDailyEndAlarm) {
+			if ((value + previousMidnight(now())) <= time) {
+				if (isOneShot){
+					isOneShot= false;
+					return 1;
+				}	
+				if (endValue + previousMidnight(now()) <= time) {
+					#ifdef DEBUG
+						Serial.printf("\n\t[2 dtDailyRepeatAlarm] pos: %d - [%s <= %s] %s -> upd: time has passed then set for tomorrow.\n", 
+							pos, timer_toString(endValue + previousMidnight(now())).c_str(), timer_toString(time).c_str(), timer_toString(value + nextMidnight(time)).c_str());						
+					#endif
+					isOneShot= true;	
+					nextTrigger = value + nextMidnight(time);
+					return 2;
+				}
+				
+			} else {
+				#ifdef DEBUG
+					Serial.printf("\n\t[0 dtDailyRepeatAlarm] pos: %d - [%s >= %s] %s -> upd: set the date to today and add the time given in value\n", 
+						pos, timer_toString(value + previousMidnight(now())).c_str(), timer_toString(time).c_str(), timer_toString(value + previousMidnight(time)).c_str());
+				#endif
+				isOneShot= true;	
+				nextTrigger = value + previousMidnight(time);
+				return 0;
+			}						
 		} else if (period == dtWeeklyAlarm) {
 			if ((value + previousSunday(now())) <= time) {
 				#ifdef DEBUG
@@ -443,7 +572,33 @@ int calendar::updateNextTrigger(int pos){
 				#endif
 				nextTrigger = value + previousSunday(time);
 				return 0;
-			}	
+			}
+		} else if (period == dtWeeklyEndAlarm) {
+			if ( (value + previousSunday(now())) <= time) {
+				if (isOneShot){
+					isOneShot= false;
+					return 1;
+				}			
+				if ( (endValue + previousSunday(now())) <= time) { 
+					#ifdef DEBUG
+						Serial.printf("\n\t[2 dtWeeklyEndAlarm] pos: %d - [%s <= %s] %s -> upd: time has passed then set for the next week.\n", 
+							pos, timer_toString(endValue + previousSunday(now())).c_str(), timer_toString(time).c_str(), timer_toString(value + nextSunday(time)).c_str());						
+					#endif
+					nextTrigger = value + nextSunday(time);
+					isOneShot = true;
+					return 2;
+				}
+				
+			} else {
+				#ifdef DEBUG
+					Serial.printf("\n\t[0 dtWeeklyRepeatAlarm] pos: %d - [%s >= %s] %s -> upd: set the date to today and add the time given in value\n", 
+						pos, timer_toString(value + previousSunday(now())).c_str(), timer_toString(time).c_str(), timer_toString(value + previousSunday(time)).c_str());
+				#endif
+				nextTrigger = value + previousSunday(time);
+				isOneShot = true;
+				return 0;
+			}
+
 		} else if (period == dtWeeklyRepeatAlarm) {
 			if ( (value + previousSunday(now())) <= time) {
 				if ( (endValue) <= time) {
@@ -500,7 +655,9 @@ String calendar_period_to_string(dt_alarmPeriod mod) {
 		case dtDailyAlarm: 			ret = "dtDailyAlarm"; 			break;
 		case dtDailyRepeatAlarm:	ret = "dtDailyRepeat"; 			break;
 		case dtWeeklyAlarm: 		ret = "dtWeeklyAlarm"; 			break;
+		case dtWeeklyEndAlarm: 		ret = "dtWeeklyEndAlarm";		break;
 		case dtWeeklyRepeatAlarm:	ret = "dtWeeklyRepeat";			break;
+		case dtDailyEndAlarm:		ret = "dtDailyEndAlarm";		break;
 	}
 	return ret;
 }
@@ -595,6 +752,7 @@ void calendar_update_all() {
 				}		
 			}
 		}
+		
 	}
 	if (!calendar_firstRound) {
 		calendar_firstRound = true;

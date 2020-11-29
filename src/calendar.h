@@ -5,11 +5,13 @@
    	#include <arduino.h>
 	#include "calendar_date.h"
 	#include "calendar_add.h"
+
 	extern "C" {
 		#include "user_interface.h"
 	}	 
 	
-	#define EVENT_MAX 20
+	#define EVENT_MAX 16
+
 	#define AlarmHMS(_hr_, _min_, _sec_) (_hr_ * SECS_PER_HOUR + _min_ * SECS_PER_MIN + _sec_)
 
 	#define dtIsAlarm(_type_)  (_type_ >= dtExplicitAlarm && _type_ < dtLastAlarmType)
@@ -28,8 +30,10 @@
 		dtTimer,
 		dtExplicitAlarm,
 		dtDailyAlarm,
+		dtDailyEndAlarm,
   		dtDailyRepeatAlarm,
 		dtWeeklyAlarm,
+		dtWeeklyEndAlarm,
 		dtWeeklyRepeatAlarm,
 		dtLastAlarmType
 	} dt_alarmPeriod ;
@@ -43,15 +47,15 @@
 			int 				pos;
 			String 				name;
 
-			time_t 				createTime;
-			time_t 				startTime;
+			time_t 				createTime 	= 0;
+			time_t 				startTime 	= 0;
 
-			time_t 				value;
-			time_t 				startValue;
-			time_t 				endValue;
-			time_t 				o_endValue = -1;
-			time_t 				repeat;
-			time_t 				nextTrigger;
+			time_t 				value 		= 0;
+			time_t 				startValue 	= 0;
+			time_t 				endValue 	= 0;
+			time_t 				o_endValue 	= -1;
+			time_t 				repeat 		= 0;
+			time_t 				nextTrigger	= 0;
 			
 			OnTick_t 			onTickHandler;
 			OnTick_t 			endTickHandler;
@@ -60,7 +64,7 @@
 			timeDayOfWeek_t 	dayOfWeek;
 
 			boolean 			isEnabled;  
-			uint8_t 			isOneShot;  
+			boolean 			isOneShot =true;  
 
 			calendar();
 				time_t 	currentTrigger();
@@ -79,9 +83,13 @@
 	int 	calendar_createWeekly(String _name, time_t _value, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler);
 	int 	calendar_createWeekly(String _name, time_t _value, time_t _repeat, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler);
 
+	int 	calendar_createWeekly(String _name, time_t _value, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler);
+
 	int 	calendar_createDaily(String _name, time_t _value, OnTick_t _onTickHandler, OnTick_t _endTickHandler);
 	int 	calendar_createDaily(String _name, time_t _value, time_t _repeat, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler);
 
+	int 	calendar_createDaily(String _name, time_t _value, time_t _endValue, OnTick_t _onTickHandler, timeDayOfWeek_t _dayOfWeek, OnTick_t _endTickHandler);
+	
 	int 	calendar_createTimer_v1(String _name, time_t _startValue, time_t _value, OnTick_t _onTickHandler, OnTick_t _endTickHandler);
 	int 	calendar_createTimer_v1(String _name, time_t _startValue, time_t _endValue, time_t _value, OnTick_t _onTickHandler, OnTick_t _endTickHandler);
 
