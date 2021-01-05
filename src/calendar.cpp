@@ -661,6 +661,7 @@ String calendar_period_to_string(dt_alarmPeriod mod) {
 	}
 	return ret;
 }
+
 boolean calendar_firstRound = false;
 void calendar_update_all() {
 
@@ -694,6 +695,10 @@ void calendar_update_all() {
 					calendar_array[i]->startValue = -1;
 
 					int upd = calendar_array[i]->updateNextTrigger(i);
+					if (!calendar_firstRound) {
+						continue;
+					}
+
 					if (calendar_array[i]->isEnabled) {
 						OnTick_t TickHandler 	= calendar_array[i]->onTickHandler;
 						OnTick_t endTickHandler = calendar_array[i]->endTickHandler;						
@@ -727,6 +732,7 @@ void calendar_update_all() {
 				if (!calendar_firstRound) {
 					continue;
 				}
+
 				if (calendar_array[i]->isEnabled) {
 					OnTick_t TickHandler 	= calendar_array[i]->onTickHandler;
 					OnTick_t endTickHandler = calendar_array[i]->endTickHandler;					
@@ -754,6 +760,7 @@ void calendar_update_all() {
 		}
 		
 	}
+
 	if (!calendar_firstRound) {
 		calendar_firstRound = true;
 	}	

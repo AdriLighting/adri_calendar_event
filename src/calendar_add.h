@@ -22,5 +22,6 @@
 
     void calendarPrint_0(int fPos, int ePos);
     void calendarPrint();
+    void calendarPrint_f(int fPos, int ePos, String & s);
 
 #endif

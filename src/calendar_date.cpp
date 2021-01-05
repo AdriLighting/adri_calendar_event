@@ -1,5 +1,4 @@
 #include "calendar_date.h"
-#include "calendar.h"
 
 char PROGMEM dayStr0_en [] = "Err";
 char PROGMEM dayStr1_en [] = "Sunday";

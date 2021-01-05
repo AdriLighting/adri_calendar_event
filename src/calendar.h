@@ -10,7 +10,7 @@
 		#include "user_interface.h"
 	}	 
 	
-	#define EVENT_MAX 16
+	#define EVENT_MAX 13
 
 	#define AlarmHMS(_hr_, _min_, _sec_) (_hr_ * SECS_PER_HOUR + _min_ * SECS_PER_MIN + _sec_)
 
