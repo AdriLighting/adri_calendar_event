@@ -54,7 +54,7 @@ void setup()
 
     // CONNECT TO WIFI
     IPAddress no_ip = {0, 0, 0, 0};
-    wifi_connect_sta("freebox_123_EXT", "phcaadax", no_ip, no_ip, no_ip);
+    wifi_connect_sta("xxx", "xxx", no_ip, no_ip, no_ip);
     // PRINT NETWORK INFOS
     // String s = network_info("DEVICENAME");
     // fsprintln(s.c_str());
