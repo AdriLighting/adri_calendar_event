@@ -55,6 +55,7 @@ int calendar_createWeekly(String _name, time_t _value, OnTick_t _onTickHandler, 
 		// }			
 		return pos;
 	}
+	return -1;
 }
 
 
@@ -92,6 +93,7 @@ int calendar_createWeekly(String _name, time_t _value, time_t _endValue, OnTick_
 		// }			
 		return pos;
 	}
+	return -1;
 }
 int calendar_editWeekly(calendar * obj, time_t _value, time_t _endValue, boolean enabled){
 		timeDayOfWeek_t _dayOfWeek 	= obj->dayOfWeek;
@@ -106,6 +108,7 @@ int calendar_editWeekly(calendar * obj, time_t _value, time_t _endValue, boolean
 			obj->nextTrigger = _value + nextSunday(now());
 			
 		}				
+	return -1;
 }
 
 /*  
@@ -138,6 +141,7 @@ int calendar_createWeekly(String _name, time_t _value, time_t _repeat, time_t _e
 		calendar_array[pos]->nextTrigger 	= _value;
 		return pos;
 	}
+	return -1;
 }
 
 int calendar_editWeekly(calendar * obj, time_t _value, time_t _repeat, time_t _endValue, boolean enabled){
@@ -154,6 +158,7 @@ int calendar_editWeekly(calendar * obj, time_t _value, time_t _repeat, time_t _e
 			obj->nextTrigger = _value + nextSunday(now());
 			
 		}				
+	return -1;
 }
 
 
@@ -188,6 +193,7 @@ int calendar_createDaily(String _name, time_t _value, OnTick_t _onTickHandler, O
 		calendar_array[pos]->nextTrigger 	= calendar_array[pos]->value;
 		return pos;
 	}
+	return -1;
 }
 int calendar_editDaily(calendar * obj, time_t _value, boolean enabled){
 		obj->o_endValue 	= -1;
@@ -198,6 +204,7 @@ int calendar_editDaily(calendar * obj, time_t _value, boolean enabled){
 				obj->value 	= _value + nextMidnight(now());
 		} else 	obj->value 	= _value;		
 		obj->nextTrigger 	= obj->value;
+	return -1;
 }
 
 /*  
@@ -233,6 +240,7 @@ int calendar_createDaily(String _name, time_t _value, time_t _endValue, OnTick_t
 		calendar_array[pos]->nextTrigger 	= calendar_array[pos]->value;
 		return pos;
 	}
+	return -1;
 }
 int calendar_editDaily(calendar * obj, time_t _value, time_t _endValue, boolean enabled){
 		obj->startValue 	= -1;
@@ -243,6 +251,7 @@ int calendar_editDaily(calendar * obj, time_t _value, time_t _endValue, boolean 
 		} else 	obj->value 	= _value;	
 		obj->endValue 		= obj->value + _endValue;
 		obj->nextTrigger 	= obj->value;
+	return 0;
 }
 
 /*  
@@ -278,6 +287,7 @@ int calendar_createDaily(String _name, time_t _value, time_t _repeat, time_t _en
 		calendar_array[pos]->nextTrigger 	= calendar_array[pos]->value;
 		return pos;
 	}
+	return -1;
 }
 int calendar_editDaily(calendar * obj, time_t _value, time_t _repeat, time_t _endValue, boolean enabled){
 		obj->repeat 		= _repeat;
@@ -289,6 +299,7 @@ int calendar_editDaily(calendar * obj, time_t _value, time_t _repeat, time_t _en
 		} else 	obj->value 	= _value;	
 		obj->endValue 		= obj->value + _endValue;
 		obj->nextTrigger 	= obj->value;
+	return -1;	
 }
 
 /*	
@@ -321,6 +332,7 @@ int calendar_createTimer_v1(String _name, time_t _startValue, time_t _value, OnT
 		calendar_array[pos]->nextTrigger 	= _value;
 		return pos;
 	}
+	return -1;
 }
 /*	
 	timer repeat : 
@@ -354,6 +366,7 @@ int calendar_createTimer_v1(String _name, time_t _startValue, time_t _endValue, 
 		calendar_array[pos]->nextTrigger 	= _value;
 		return pos;
 	}
+	return -1;
 }
 
 /*  
@@ -390,6 +403,7 @@ int calendar_createTimer_v2(String _name, time_t _startValue, time_t _value, OnT
 		calendar_array[pos]->nextTrigger 	= _value;
 		return pos;
 	}
+	return -1;
 }
 /*  
     timer repeat : 
@@ -430,6 +444,7 @@ int calendar_createTimer_v2(String _name, time_t _startValue, time_t _endValue, 
 		calendar_array[pos]->nextTrigger 	= now()+_value;
 		return pos;
 	}
+	return -1;
 }
 
 int calendar_edit(calendar * obj, time_t _value, time_t _repeat, time_t _endValue, boolean enabled){
@@ -438,7 +453,7 @@ int calendar_edit(calendar * obj, time_t _value, time_t _repeat, time_t _endValu
 	if (obj->period == dtDailyEndAlarm) 	{calendar_editDaily(obj, _value, _endValue, enabled);}
 	if (obj->period == dtWeeklyRepeatAlarm)	{calendar_editWeekly(obj, _value, _repeat, _endValue, enabled);}
 	if (obj->period == dtWeeklyEndAlarm)	{calendar_editWeekly(obj, _value, _endValue, enabled);}
-
+	return 0;
 }
 
 String timer_toString(time_t t) {
@@ -469,6 +484,8 @@ int calendar::setNext(){
 		} else {
 
 		}
+
+		return 0;
 }
 
 
@@ -658,6 +675,7 @@ String calendar_period_to_string(dt_alarmPeriod mod) {
 		case dtWeeklyEndAlarm: 		ret = "dtWeeklyEndAlarm";		break;
 		case dtWeeklyRepeatAlarm:	ret = "dtWeeklyRepeat";			break;
 		case dtDailyEndAlarm:		ret = "dtDailyEndAlarm";		break;
+		default:break;
 	}
 	return ret;
 }

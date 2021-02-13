@@ -74,7 +74,7 @@ String calendar_date_get_dowStr(String country, String day) {
 
 int calendar_date_get_dow(String country, char* day) {
 	int ret = -1;
-	char* iDay;
+	char* iDay = (char*)"";
 	for (int i = 0; i < calendar_dateCount; ++i) {
 		if (country == "fr") iDay = calendar_dates[i].day_fr;
 		if (country == "en") iDay = calendar_dates[i].day_en;
@@ -119,25 +119,25 @@ char PROGMEM monthStr12_fr []  = "Decembre";
 
 
 PROGMEM calendar_month calendar_months [] = { 
-	{monthStr0_en, monthStr0_fr, "err"},
-	{monthStr1_en, monthStr1_fr, "Jan"},
-	{monthStr2_en, monthStr2_fr, "Fev"},
-	{monthStr3_en, monthStr3_fr, "Mar"},
-	{monthStr4_en, monthStr4_fr, "Avr"},
-	{monthStr5_en, monthStr5_fr, "Mai"},
-	{monthStr6_en, monthStr6_fr, "Jun"},
-	{monthStr7_en, monthStr7_fr, "Jui"},
-	{monthStr8_en, monthStr8_fr, "Aou"},
-	{monthStr9_en, monthStr9_fr, "Sep"},
-	{monthStr10_en, monthStr10_fr, "Oct"},
-	{monthStr11_en, monthStr11_fr, "Nov"},
-	{monthStr12_en, monthStr12_fr, "Dec"},
+	{monthStr0_en, monthStr0_fr, (char*)"err"},
+	{monthStr1_en, monthStr1_fr, (char*)"Jan"},
+	{monthStr2_en, monthStr2_fr, (char*)"Fev"},
+	{monthStr3_en, monthStr3_fr, (char*)"Mar"},
+	{monthStr4_en, monthStr4_fr, (char*)"Avr"},
+	{monthStr5_en, monthStr5_fr, (char*)"Mai"},
+	{monthStr6_en, monthStr6_fr, (char*)"Jun"},
+	{monthStr7_en, monthStr7_fr, (char*)"Jui"},
+	{monthStr8_en, monthStr8_fr, (char*)"Aou"},
+	{monthStr9_en, monthStr9_fr, (char*)"Sep"},
+	{monthStr10_en, monthStr10_fr, (char*)"Oct"},
+	{monthStr11_en, monthStr11_fr, (char*)"Nov"},
+	{monthStr12_en, monthStr12_fr, (char*)"Dec"},
 };
 uint8_t calendar_monthCount = ARRAY_SIZE(calendar_months);
 
 int calendar_date_get_mon(String country, String mon) {
 	int ret = -1;
-	String iMon;
+	String iMon = "";
 	for (int i = 0; i < calendar_monthCount; ++i) {
 		if (country == "fr") iMon = ce_char_to_string(calendar_months[i].mon_fr);
 		if (country == "en") iMon = ce_char_to_string(calendar_months[i].mon_en);
@@ -168,7 +168,7 @@ String calendar_date_get_monStr(String country, String mon) {
 }
 int calendar_date_get_mon(String country, char* mon) {
 	int ret = -1;
-	char* iMon;
+	char* iMon = (char*)"";
 	for (int i = 0; i < calendar_monthCount; ++i) {
 		if (country == "fr") iMon = calendar_months[i].mon_fr;
 		if (country == "en") iMon = calendar_months[i].mon_en;
